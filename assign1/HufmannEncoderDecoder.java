@@ -22,7 +22,7 @@ import java.util.PriorityQueue;
 import java.util.Vector;
 
 public class HufmannEncoderDecoder implements compressor {
-	class NodeBits {
+	/*class NodeBits {
 		boolean bit;
 		NodeBits next = null;
 		
@@ -30,9 +30,9 @@ public class HufmannEncoderDecoder implements compressor {
 			bit = b;
 		}
 		
-	}
+	}*/
 	
-	class ArrayListBit {
+	/*class ArrayListBit {
 		NodeBits Head;
 		NodeBits Tail;
 		
@@ -68,7 +68,7 @@ public class HufmannEncoderDecoder implements compressor {
 				tmp = tmp.next;
 			}
 		}
-	}
+	}*/
 	
 	class Node implements Comparable<Node> {
 		char ch;
