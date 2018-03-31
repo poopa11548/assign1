@@ -28,7 +28,7 @@ class HufmannNodeTest {
 		try {
 			HufmannNode head = HufmannNode.BuildTree(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
 			
-			//byte[] b = Utils.GetByteArrayFromString(head.toString());
+			byte[] b = Utils.GetByteArrayFromString(head.toString());
 			HufmannNode after = new HufmannNode(new ByteIter(b));
 			
 			assertEquals(head, after);

@@ -1,5 +1,6 @@
 package assign1;
 
+import java.util.BitSet;
 import java.util.LinkedList;
 
 public class ByteIterEx {
@@ -20,7 +21,7 @@ public class ByteIterEx {
 		}
 	}
 	
-	public void add(LinkedList<Boolean> code) {
+	public void add(BitSet code) {
 		for (boolean b : code)
 			add(b);
 	}

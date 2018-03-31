@@ -43,9 +43,9 @@ public class HufmannEncoderDecoder implements compressor {
 				
 				StringBuilder builder = new StringBuilder();
 				for (byte b : bytes) {
-					builder.append(frequencies.get(b).getCode());
+					builder.append(frequencies.get(b).getReversedCode());
 				}
-				String treeString = hufmannTree.toStringx();
+				String treeString = hufmannTree.addToBitSet();
 				System.out.println("Tree string length: " + treeString.length());
 				byte[] bytesToFile = Utils.GetByteArrayFromString(treeString + builder.toString());
 				System.out.println("Bytes to file length: " + bytesToFile.length);
@@ -67,7 +67,7 @@ public class HufmannEncoderDecoder implements compressor {
 				byte[] bytesFromFile = Utils.GetFileAsBytes(input_names[i]);
 				ByteIter iterator = new ByteIter(bytesFromFile);
 				HufmannNode hufmannTree = new HufmannNode(iterator);
-				System.out.println("Hufmann tree size: " + hufmannTree.toStringx().length());
+				System.out.println("Hufmann tree size: " + hufmannTree.addToBitSet().length());
 				LinkedList<Byte> decompressed = new LinkedList<>();
 				while (iterator.nextLengthInFullBytes() >= 1)
 					decompressed.addLast(hufmannTree.getValue(iterator));

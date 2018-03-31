@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
@@ -81,6 +82,10 @@ class UtilsTest {
 	
 	@Test
 	void bits() {
+		BitSet bitSet = new BitSet();
+		bitSet.set(0,false);
+		System.out.println(bitSet.toString());
+		
 		byte tr = (byte) 256;
 		byte b = (byte) 0b10010100;
 		for (int i = 0; i < 8; i++) {
