@@ -1,6 +1,6 @@
 package test;
 
-import assign1.ByteIter;
+import assign1.BitSetIterator;
 import assign1.HufmannNode;
 import assign1.Utils;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,8 +28,9 @@ class HufmannNodeTest {
 		try {
 			HufmannNode head = HufmannNode.BuildTree(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
 			
-			byte[] b = Utils.GetByteArrayFromString(head.toString());
-			HufmannNode after = new HufmannNode(new ByteIter(b));
+			BitSetIterator iterator = new BitSetIterator();
+			head.addToBitSet(iterator);
+			HufmannNode after = new HufmannNode(iterator);
 			
 			assertEquals(head, after);
 			

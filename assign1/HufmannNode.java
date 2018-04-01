@@ -1,13 +1,12 @@
 package assign1;
 
 import java.io.EOFException;
-import java.util.BitSet;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class HufmannNode implements Comparable {
 	private int frequency;
-	private BitSet reversedCode = new BitSet();
+	private BitSetIterator reversedCode = new BitSetIterator();
 	private int codeIndex = 0;
 	private byte value;
 	private HufmannNode left;
@@ -36,7 +35,7 @@ public class HufmannNode implements Comparable {
 		right.setReversedCode(false);
 	}
 	
-	public HufmannNode(ByteIter iterator) throws EOFException {
+	public HufmannNode(BitSetIterator iterator) throws EOFException {
 		if (!iterator.hasNext())
 			throw new EOFException("No more bits to build tree");
 		boolean bit = iterator.next();
@@ -114,7 +113,7 @@ public class HufmannNode implements Comparable {
 		throw new IllegalArgumentException("Argument must be instance of HufmannNode");
 	}
 	
-	public BitSet getReversedCode() {
+	public BitSetIterator getReversedCode() {
 		return reversedCode;
 	}
 	
@@ -126,10 +125,10 @@ public class HufmannNode implements Comparable {
 		}
 	}
 	
-	public void addToBitSet(ByteIterEx iterator) {
+	public void addToBitSet(BitSetIterator iterator) {
 		if (isLeaf) {
 			iterator.add(false);
-			iterator.add(reversedCode);
+			iterator.addReverse(reversedCode);
 		} else {
 			iterator.add(true);
 			left.addToBitSet(iterator);
@@ -190,7 +189,7 @@ public class HufmannNode implements Comparable {
 		return Objects.hash(reversedCode, value, isLeaf);
 	}
 	
-	public byte getValue(ByteIter iterator) throws EOFException {
+	public byte getValue(BitSetIterator iterator) throws EOFException {
 		if (!iterator.hasNext()) throw new EOFException("End of Iterator");
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);
