@@ -1,6 +1,6 @@
 package test;
 
-import assign1.BitSetIterator;
+import assign1.BitsBuffer;
 import assign1.HufmannNode;
 import assign1.Utils;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,7 +19,7 @@ class HufmannNodeTest {
 	
 	@BeforeAll
 	static void classSetUp() {
-		bytes = UtilsTest.getByteRandom(10000);// new byte[100];
+		bytes = UtilsTest.getByteRandom();// new byte[100];
 		//rnd.nextBytes(bytes);
 	}
 	
@@ -28,9 +28,8 @@ class HufmannNodeTest {
 		try {
 			HufmannNode head = HufmannNode.BuildTree(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
 			
-			BitSetIterator iterator = new BitSetIterator();
-			head.addToBitSet(iterator);
-			HufmannNode after = new HufmannNode(iterator);
+			BitsBuffer buffer = new BitsBuffer(head);
+			HufmannNode after = new HufmannNode(buffer.iterator());
 			
 			assertEquals(head, after);
 			

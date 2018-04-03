@@ -1,5 +1,6 @@
 package test;
 
+import assign1.BitSetIterator;
 import assign1.HufmannNode;
 import assign1.Utils;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
@@ -19,10 +19,11 @@ class UtilsTest {
 	
 	private static byte[] bytes;
 	private static Hashtable<Byte, Integer> constFrequencies;
-	private static final int count = 1000;
+	private static final int count = 10;
 	private static Random rnd = new Random();
 	
-	public static Hashtable<Byte, Integer> getFrequencies(int count) {
+	public static Hashtable<Byte, Integer> staticGetFrequencies() {
+		int count = UtilsTest.count;
 		Hashtable<Byte, Integer> frequencies = new Hashtable<>();
 		for (int i = rnd.nextInt(count - 1) + 1; count > 4; count -= i, i = rnd.nextInt(count > 1 ? count - 1 : 1) + 1)
 			frequencies.put((byte) rnd.nextInt(256), i);
@@ -32,7 +33,7 @@ class UtilsTest {
 		return frequencies;
 	}
 	
-	public static byte[] getByteRandom(int count, Hashtable<Byte, Integer> frequencies) {
+	public static byte[] getByteRandom(Hashtable<Byte, Integer> frequencies) {
 		byte[] mybytes = new byte[count];
 		
 		for (Map.Entry<Byte, Integer> x : frequencies.entrySet()) {
@@ -49,8 +50,8 @@ class UtilsTest {
 		return mybytes;
 	}
 	
-	public static byte[] getByteRandom(int count) {
-		return getByteRandom(count, getFrequencies(count));
+	public static byte[] getByteRandom() {
+		return getByteRandom(staticGetFrequencies());
 		/*System.out.println("Start");
 		byte[] bytes = new byte[count];
 		int counter = count;
@@ -76,15 +77,13 @@ class UtilsTest {
 	
 	@BeforeAll
 	static void classInit() {
-		constFrequencies = getFrequencies(count);
-		bytes = getByteRandom(count, constFrequencies);
+		constFrequencies = staticGetFrequencies();
+		bytes = getByteRandom(constFrequencies);
 	}
 	
 	@Test
 	void bits() {
-		BitSet bitSet = new BitSet();
-		bitSet.set(0,false);
-		System.out.println(bitSet.toString());
+		BitSetIterator bitSetIterator = new BitSetIterator(bytes);
 		
 		byte tr = (byte) 256;
 		byte b = (byte) 0b10010100;

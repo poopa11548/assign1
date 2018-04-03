@@ -22,7 +22,7 @@ class HufmannEncoderDecoderTest {
 	@BeforeAll
 	static void classSetUp() {
 		compressorObject = new HufmannEncoderDecoder();
-		bytes = UtilsTest.getByteRandom(10000000); //new byte[10000];
+		bytes = UtilsTest.getByteRandom(); //new byte[10000];
 	}
 	
 	@Test

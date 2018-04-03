@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 public class Utils {
 	public static byte[] GetFileAsBytes(String path) throws IOException {
@@ -61,6 +62,18 @@ public class Utils {
 		byte[] result = new byte[objects.length];
 		for (int i = 0; i < result.length; i++)
 			result[i] = (byte) objects[i];
+		return result;
+	}
+	
+	public static byte NextBitFromIterator(Iterator<Boolean> iterator) {
+		byte result = 0;
+		int i;
+		for (i = 0; i < 8 && iterator.hasNext(); i++) {
+			result <<= 1;
+			if (iterator.next()) result |= 1;
+		}
+		if (i < 8)
+			throw new IndexOutOfBoundsException(i);
 		return result;
 	}
 }

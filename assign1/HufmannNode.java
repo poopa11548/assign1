@@ -1,13 +1,14 @@
 package assign1;
 
 import java.io.EOFException;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class HufmannNode implements Comparable {
 	private int frequency;
-	private BitSetIterator reversedCode = new BitSetIterator();
-	private int codeIndex = 0;
+	private BitSetBuilder reversedCode = new BitSetBuilder();
+	//private int codeIndex = 0;
 	private byte value;
 	private HufmannNode left;
 	private HufmannNode right;
@@ -35,22 +36,23 @@ public class HufmannNode implements Comparable {
 		right.setReversedCode(false);
 	}
 	
-	public HufmannNode(BitSetIterator iterator) throws EOFException {
+	public HufmannNode(Iterator<Boolean> iterator) throws EOFException {
 		if (!iterator.hasNext())
 			throw new EOFException("No more bits to build tree");
 		boolean bit = iterator.next();
 		// DEL System.out.println(bit ? 0 : 1);
 		if (bit) {
-			isLeaf = true;
-			value = iterator.nextByte();
-			// DEL System.out.println(Utils.ByteToString(value));
-		} else {
 			if (left != null || right != null) {
 				throw new IllegalArgumentException("Error here. this is wired");
 			}
 			isLeaf = false;
 			left = new HufmannNode(iterator);
 			right = new HufmannNode(iterator);
+			
+			// DEL System.out.println(Utils.ByteToString(value));
+		} else {
+			isLeaf = true;
+			value = Utils.NextBitFromIterator(iterator);
 		}
 	}
 	
@@ -113,32 +115,32 @@ public class HufmannNode implements Comparable {
 		throw new IllegalArgumentException("Argument must be instance of HufmannNode");
 	}
 	
-	public BitSetIterator getReversedCode() {
-		return reversedCode;
+	public Iterator<Boolean> getReversedCode() {
+		return new ReverseIterator(reversedCode);
 	}
 	
 	private void setReversedCode(boolean s) {
-		if (isLeaf) reversedCode.set(codeIndex++,s);
+		if (isLeaf) reversedCode.set(s);
 		else {
 			right.setReversedCode(s);
 			left.setReversedCode(s);
 		}
 	}
 	
-	public void addToBitSet(BitSetIterator iterator) {
+	public void addToBuffer(BitsBuffer buffer) {
 		if (isLeaf) {
-			iterator.add(false);
-			iterator.addReverse(reversedCode);
+			buffer.add(false);
+			buffer.add(new ReverseIterator(reversedCode));
 		} else {
-			iterator.add(true);
-			left.addToBitSet(iterator);
-			right.addToBitSet(iterator);
+			buffer.add(true);
+			left.addToBuffer(buffer);
+			right.addToBuffer(buffer);
 		}
 	}
 	
 	/*public String toString1() {
 		if (isLeaf) return "00" + Utils.ByteToString(value);
-		return "10" + left.addToBitSet() + "01" + right.addToBitSet();
+		return "10" + left.addToBuffer() + "01" + right.addToBuffer();
 	}
 	
 	public String toString2() {
@@ -164,8 +166,8 @@ public class HufmannNode implements Comparable {
 			StringBuilder ascii = new StringBuilder();
 			for (int i = 0; i < 8; i++)
 				ascii.append(iterator.next() ? 0 : 1);
-			System.out.println(ascii.addToBitSet());
-			value = Utils.StringToByte(ascii.addToBitSet());
+			System.out.println(ascii.addToBuffer());
+			value = Utils.StringToByte(ascii.addToBuffer());
 			System.out.println(Utils.ByteToString(value));
 			reversedCode = codeStep;
 			System.out.println(reversedCode);
@@ -189,7 +191,7 @@ public class HufmannNode implements Comparable {
 		return Objects.hash(reversedCode, value, isLeaf);
 	}
 	
-	public byte getValue(BitSetIterator iterator) throws EOFException {
+	public byte getValue(Iterator<Boolean> iterator) throws EOFException {
 		if (!iterator.hasNext()) throw new EOFException("End of Iterator");
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);
