@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 
 public class HufmannNode implements Comparable {
 	private int frequency;
-	private BitSetBuilder reversedCode = new BitSetBuilder();
+	private BitList reversedCode;
 	//private int codeIndex = 0;
 	private byte value;
 	private HufmannNode left;
@@ -115,22 +115,22 @@ public class HufmannNode implements Comparable {
 		throw new IllegalArgumentException("Argument must be instance of HufmannNode");
 	}
 	
-	public Iterator<Boolean> getReversedCode() {
-		return new ReverseIterator(reversedCode);
+	public BitList getReversedCode() {
+		return reversedCode;
 	}
 	
 	private void setReversedCode(boolean s) {
-		if (isLeaf) reversedCode.set(s);
+		if (isLeaf) reversedCode.add(s);
 		else {
 			right.setReversedCode(s);
 			left.setReversedCode(s);
 		}
 	}
 	
-	public void addToBuffer(BitsBuffer buffer) {
+	public void addToBuffer(BitList buffer) {
 		if (isLeaf) {
 			buffer.add(false);
-			buffer.add(new ReverseIterator(reversedCode));
+			buffer.add(reversedCode);
 		} else {
 			buffer.add(true);
 			left.addToBuffer(buffer);
