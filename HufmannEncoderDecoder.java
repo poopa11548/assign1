@@ -16,6 +16,13 @@ package assign1;
 import base.compressor;
 
 
+
+
+
+
+
+
+
 import java.io.*;
 import java.util.BitSet;
 import java.util.LinkedList;
@@ -73,25 +80,22 @@ class Node implements Comparable<Node>{
 	{
 		int []  freq=new int [256];
 		File file=new File(input_names[0]);
-		InputStream finput = new FileInputStream(file);
+		InputStream input = new FileInputStream(file);
+		File file2=new File(output_names[0]);
+	    OutputStream out=new FileOutputStream(file2);
 		byte[] Bytes = new byte[(int)file.length()];
-        finput.read(Bytes, 0, Bytes.length);
+        input.read(Bytes, 0, Bytes.length);
         for(int i=0;i<Bytes.length;i++){
         	freq[ByteToInt(Bytes[i])]++;
         }
-        File file2=new File(output_names[0]);
-    	OutputStream out=new FileOutputStream(file2);
         Node root=buildTree(freq);
         SetCode(root,"");
         Node[] nodes=new Node[256];
         fillNodes(root,nodes);
-        String sg= RootToVec(root);
-        char [] ch=new char[sg.length()];
-        for(int i=0; i<sg.length();i++)
-        	ch[i]=sg.charAt(i);
+        String StringTree= RootToString(root);
         BitSet bits=new BitSet();
-        byte[] bytes = ByteFromChar(ch);
-    	int k=0;
+        byte[] ByteTree = ByteFromString(StringTree);
+    	int k=0;//index for BitSet
         for(int i=0;i<Bytes.length;i++){
         	for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
         		if(nodes[ByteToInt(Bytes[i])].code[j])
@@ -99,63 +103,38 @@ class Node implements Comparable<Node>{
         	k++;
         	}
         }
-            byte[] b = bits.toByteArray();
-        	int x=k-bits.length();
-        	byte _byte=(byte)x;//count zero lest
-        	out.write(_byte);
-        	out.write(bytes);
-        	out.write(b);
-        	out.close();
-        finput.close();
+        byte[] ByteCode = bits.toByteArray();
+       	int x=k-bits.length();
+       	byte ByteZeroEnd=(byte)x;//count zero lest
+       	out.write(ByteZeroEnd);
+       	System.out.println("x1="+ByteTree.length);
+     	System.out.println("x2="+ByteCode.length);
+       	out.write(ByteTree);
+       	out.write(ByteCode);
+       	out.close();
+       	input.close();
 	}
-	public String RootToVec(Node root){
+	public String RootToString(Node root){
 		if(root.left==null&&root.right==null){
 			String str=Integer.toBinaryString(root.ch) ;
 			while(str.length()!=8)
 				str="0"+str;
 			return "0"+str ;
 		}
-		return "1"+RootToVec(root.left)+RootToVec(root.right);
+		return "1"+RootToString(root.left)+RootToString(root.right);
 	}
-	public byte[] ByteFromVec(Vector<Boolean> v){
+	public byte[] ByteFromString(String s){
 		int len;
-		if(v.size()%8==0)
-			len=v.size()/8;
+		if(s.length()%8==0)
+			len=s.length()/8;
 		else
-			len=v.size()/8+1;
-		byte[] b;
+			len=s.length()/8+1;
 		BitSet f=new BitSet();
-		for(int i=0;i<v.size();i++){
-			if(v.get(i))
+		for(int i=0;i<s.length();i++){
+			if(s.charAt(i)=='1')
 				f.set(i);
-			else
-				f.clear(i);
 		}	
-		b=f.toByteArray();
-			if(b.length!=len){
-				byte[] d=new byte[len];
-				for(int i=0;i<b.length;i++)
-					d[i]=b[i];
-				d[len-1]=(byte)0;
-				b=d;
-			}
-		return b;
-	}
-	public byte[] ByteFromChar(char[] v){
-		int len;
-		if(v.length%8==0)
-			len=v.length/8;
-		else
-			len=v.length/8+1;
-		byte[] b;
-		BitSet f=new BitSet();
-		for(int i=0;i<v.length;i++){
-			if(v[i]=='1')
-				f.set(i);
-			else
-				f.clear(i);
-		}	
-		b=f.toByteArray();
+		byte[] b=f.toByteArray();
 			if(b.length!=len){
 				byte[] d=new byte[len];
 				for(int i=0;i<b.length;i++)
@@ -224,48 +203,27 @@ class Node implements Comparable<Node>{
 		InputStream finput = new FileInputStream(file);
 		byte[] Bytes = new byte[(int)file.length()];
         finput.read(Bytes, 0, Bytes.length);
-        int x=(int)Bytes[0];
+        int ZeroLast=(int)Bytes[0];
         BitSet bits=new BitSet();
         bits=BitSet.valueOf(Bytes);
         Node root=new Node('\0', 0);
-        int[] k=new int[2];
-        k[0]=8;
+        int[] k=new int[2];//k[0] index
+        k[0]=8;//8 bits first is The amount of zeros at the last.
         BuildTree(root, bits, k);
-        int size=bits.length();
-        size=k[0]%8;
-        for(int i=0;i<8-size;i++)
+        int size=k[0]%8;
+        for(int i=0;i<8-size;i++)//complete to byte
         	k[0]++;
-        Vector<Byte> b=LsToByte(bits,root,k,x);
+        Vector<Byte> b=TreeToByte(bits,root,k,ZeroLast);
         File file2=new File(output_names[0]);
         OutputStream out=new FileOutputStream(file2);
-        byte[] bb=new byte[b.size()];
+        byte[] ByteToSend=new byte[b.size()];
         for(int i=0;i<b.size();i++)
-        bb[i]=b.get(i);
-        out.write(bb);
+        ByteToSend[i]=b.get(i);
+        out.write(ByteToSend);
  		out.close();
  		finput.close();
-        
-      /*  LinkedList<Boolean> ls=new LinkedList<Boolean>();
-        for(int i=8;i<bits.length();i++)
-        	ls.add(bits.get(i));
-       Node root=new Node('\0',0);
-        int size=ls.size();
-       BuildTree(root,ls);
-       size=(size-ls.size())%8;
-       for(int i=0;i<8-size;i++)
-    	   ls.poll();
-       for(int i=0;i<x;i++)
-    	   ls.addLast(false);
-      Vector<Byte> b=LsToByte(ls,root);
-       File file2=new File(output_names[0]);
-       OutputStream out=new FileOutputStream(file2);
-       byte[] bb=new byte[b.size()];
-       for(int i=0;i<b.size();i++)
-    	   bb[i]=b.get(i);
-       out.write(bb);
-		out.close();
-		finput.close();*/
-	}public  Vector<Byte> LsToByte(BitSet ls,Node root,int[] k ,int x){
+	}
+	public  Vector<Byte> TreeToByte(BitSet ls,Node root,int[] k ,int x){
 		Node p=root;
 		Vector<Byte> lb=new Vector<Byte>();
 		while(k[0]-1<ls.length()+x){
@@ -284,31 +242,12 @@ class Node implements Comparable<Node>{
 		}
 		return lb;
 	}
-	public  Vector<Byte> LsToByte(LinkedList<Boolean> ls,Node root){
-		Node p=root;
-		boolean flag=true;
-		Vector<Byte> lb=new Vector<Byte>();
-		while(flag){
-			if(p.left==null&&p.right==null||ls.isEmpty()){
-				lb.add((byte)p.ch);
-				p=root;
-				if(ls.isEmpty())
-					flag=false;
-			}
-			else if(ls.poll())
-				p=p.left;
-			else
-				p=p.right;
-		}
-		
-		return lb;
-	}
-	public void BuildTree(Node root,BitSet ls,int[] k){
-		if(!ls.get(k[0])){
+	public void BuildTree(Node root,BitSet bits,int[] k){
+		if(!bits.get(k[0])){//zero
 			k[0]++;
 			int ret=0,j=7;
-			for(int i=0;i<8;i++){
-				if(ls.get(k[0]))
+			for(int i=0;i<8;i++){//calculate the char ASCII
+				if(bits.get(k[0]))
 				ret=(int) (ret+Math.pow(2,j));
 				j--;
 				k[0]++;
@@ -316,48 +255,83 @@ class Node implements Comparable<Node>{
 			root.ch=(char)ret;
 			return;
 		}
-		if(ls.get(k[0]))
+		if(bits.get(k[0]))
 		k[0]++;
 		root.left=new Node('\0',0);
 		root.right=new Node('\0',0);
-		BuildTree(root.left, ls,k);
-		BuildTree(root.right, ls,k);
+		BuildTree(root.left, bits,k);
+		BuildTree(root.right, bits,k);
 		}
-		
-	public void BuildTree(Node root,LinkedList<Boolean> ls){
-		if(!ls.getFirst()){
-			ls.pollFirst();
-			int ret=0,j=7;
-			for(int i=0;i<8;i++){
-				if(ls.pollFirst())
-				ret=(int) (ret+Math.pow(2,j));
-				j--;
-			}
-			root.ch=(char)ret;
-			return;
-		}
-		if(ls.getFirst())
-		ls.pollFirst();
-		root.left=new Node('\0',0);
-		root.right=new Node('\0',0);
-		BuildTree(root.left, ls);
-		BuildTree(root.right, ls);
-		}
-		
-	
-
 	@Override
-	public byte[] CompressWithArray(String[] input_names, String[] output_names)
+	public byte[] CompressWithArray(String[] input_names, String[] output_names) throws IOException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int []  freq=new int [256];
+		File file=new File(input_names[0]);
+		InputStream input = new FileInputStream(file);
+		File file2=new File(output_names[0]);
+	    OutputStream out=new FileOutputStream(file2);
+		byte[] Bytes = new byte[(int)file.length()];
+        input.read(Bytes, 0, Bytes.length);
+        for(int i=0;i<Bytes.length;i++){
+        	freq[ByteToInt(Bytes[i])]++;
+        }
+        Node root=buildTree(freq);
+        SetCode(root,"");
+        Node[] nodes=new Node[256];
+        fillNodes(root,nodes);
+        String StringTree= RootToString(root);
+        BitSet bits=new BitSet();
+        byte[] ByteTree = ByteFromString(StringTree);
+    	int k=0;//index for BitSet
+        for(int i=0;i<Bytes.length;i++){
+        	for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
+        		if(nodes[ByteToInt(Bytes[i])].code[j])
+        			bits.set(k);
+        	k++;
+        	}
+        }
+        byte[] ByteCode = bits.toByteArray();
+       	int x=k-bits.length();
+       	byte ByteZeroEnd=(byte)x;//count zero lest
+       	byte[] ByteToSend=new byte[ByteTree.length+ByteCode.length+1];
+       	ByteToSend[0]=ByteZeroEnd;
+       	for(int i=0;i<ByteTree.length;i++)
+       		ByteToSend[i+1]=ByteTree[i];
+       	for(int i=0;i<ByteCode.length;i++)
+       		ByteToSend[i+ByteTree.length+1]=ByteCode[i];
+    	out.write(ByteToSend);
+       	out.close();
+       	input.close();
+		return ByteToSend;
 	}
 
 	@Override
-	public byte[] DecompressWithArray(String[] input_names, String[] output_names)
+	public byte[] DecompressWithArray(String[] input_names, String[] output_names) throws IOException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		File file=new File(input_names[0]);
+		InputStream finput = new FileInputStream(file);
+		byte[] Bytes = new byte[(int)file.length()];
+        finput.read(Bytes, 0, Bytes.length);
+        int ZeroLast=(int)Bytes[0];
+        BitSet bits=new BitSet();
+        bits=BitSet.valueOf(Bytes);
+        Node root=new Node('\0', 0);
+        int[] k=new int[2];//k[0] index
+        k[0]=8;//8 bits first is The amount of zeros at the last.
+        BuildTree(root, bits, k);
+        int size=k[0]%8;
+        for(int i=0;i<8-size;i++)//complete to byte
+        	k[0]++;
+        Vector<Byte> b=TreeToByte(bits,root,k,ZeroLast);
+        File file2=new File(output_names[0]);
+        OutputStream out=new FileOutputStream(file2);
+        byte[] ByteToSend=new byte[b.size()];
+        for(int i=0;i<b.size();i++)
+        ByteToSend[i]=b.get(i);
+        out.write(ByteToSend);
+ 		out.close();
+ 		finput.close();
+		return ByteToSend;
 	}
 
 }
