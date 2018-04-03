@@ -20,4 +20,10 @@ public interface BitList extends Iterator<Boolean> {
 	byte[] toByteArray();
 	
 	byte nextByte();
+	
+	void set(int index);
+	
+	int length();
+	
+	void set(int index, boolean value);
 }

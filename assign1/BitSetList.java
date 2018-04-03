@@ -45,6 +45,23 @@ public class BitSetList implements BitList {
 	}
 	
 	@Override
+	public void set(int index) {
+		throw new IllegalArgumentException("Not Implement");
+		
+	}
+	
+	@Override
+	public int length() {
+		throw new IllegalArgumentException("Not Implement");
+	}
+	
+	@Override
+	public void set(int index, boolean value) {
+		throw new IllegalArgumentException("Not Implement");
+		
+	}
+	
+	@Override
 	public boolean hasNext() {
 		throw new IllegalArgumentException("Not Implement");
 	}
