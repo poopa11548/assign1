@@ -1,6 +1,6 @@
 package test;
 
-import assign1.BitSetIterator;
+import assign1.BitList;
 import assign1.HufmannNode;
 import assign1.Utils;
 import org.junit.jupiter.api.BeforeAll;
@@ -83,7 +83,7 @@ class UtilsTest {
 	
 	@Test
 	void bits() {
-		BitSetIterator bitSetIterator = new BitSetIterator(bytes);
+		BitList bitList = BitList.newInstance(bytes);
 		
 		byte tr = (byte) 256;
 		byte b = (byte) 0b10010100;

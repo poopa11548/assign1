@@ -1,6 +1,7 @@
 package test;
 
-import assign1.BitsBuffer;
+import assign1.BitList;
+import assign1.BitSetList;
 import assign1.HufmannNode;
 import assign1.Utils;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,10 +27,11 @@ class HufmannNodeTest {
 	@Test
 	void ParseToStringAndBuild() {
 		try {
-			HufmannNode head = HufmannNode.BuildTree(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
+			HufmannNode head = HufmannNode.BuildTreeFromHeap(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
 			
-			BitsBuffer buffer = new BitsBuffer(head);
-			HufmannNode after = new HufmannNode(buffer.iterator());
+			BitList buffer = new BitSetList();
+			head.BuildBitListFromTree(buffer);
+			HufmannNode after = new HufmannNode(buffer);
 			
 			assertEquals(head, after);
 			

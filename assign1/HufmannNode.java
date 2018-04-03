@@ -36,6 +36,26 @@ public class HufmannNode implements Comparable {
 		right.setReversedCode(false);
 	}
 	
+	public HufmannNode(BitList builder) throws EOFException {
+		if (!builder.hasNext())
+			throw new EOFException("No more bits to build tree");
+		boolean bit = builder.next();
+		// DEL System.out.println(bit ? 0 : 1);
+		if (bit) {
+			if (left != null || right != null) {
+				throw new IllegalArgumentException("Error here. this is wired");
+			}
+			isLeaf = false;
+			left = new HufmannNode(builder);
+			right = new HufmannNode(builder);
+			
+			// DEL System.out.println(Utils.ByteToString(value));
+		} else {
+			isLeaf = true;
+			value = builder.nextByte();
+		}
+	}
+	
 	public HufmannNode(Iterator<Boolean> iterator) throws EOFException {
 		if (!iterator.hasNext())
 			throw new EOFException("No more bits to build tree");
@@ -56,7 +76,7 @@ public class HufmannNode implements Comparable {
 		}
 	}
 	
-	public static HufmannNode BuildTree(PriorityQueue<HufmannNode> minHeap) {
+	public static HufmannNode BuildTreeFromHeap(PriorityQueue<HufmannNode> minHeap) {
 		while (minHeap.size() > 1) {
 			HufmannNode newNode = new HufmannNode(minHeap.poll(), minHeap.poll());
 			minHeap.add(newNode);
@@ -64,7 +84,7 @@ public class HufmannNode implements Comparable {
 		return minHeap.poll();
 	}
 	
-	/*public void BuildTree(ByteIter iterator) throws EOFException {
+	/*public void BuildTreeFromHeap(ByteIter iterator) throws EOFException {
 
 		for(int i = 0;i<bytesFromFile.length;i++)
 			System.out.print(Utils.ByteToString(bytesFromFile[i]));
@@ -127,16 +147,9 @@ public class HufmannNode implements Comparable {
 		}
 	}
 	
-	public void addToBuffer(BitList buffer) {
-		if (isLeaf) {
-			buffer.add(false);
-			buffer.add(reversedCode);
-		} else {
-			buffer.add(true);
-			left.addToBuffer(buffer);
-			right.addToBuffer(buffer);
-		}
-	}
+	/*public void addToBuffer(BitList buffer) {
+
+	}*/
 	
 	/*public String toString1() {
 		if (isLeaf) return "00" + Utils.ByteToString(value);
@@ -196,5 +209,16 @@ public class HufmannNode implements Comparable {
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);
 		return right.getValue(iterator);
+	}
+	
+	public void BuildBitListFromTree(BitList bitsBuffer) {
+		if (isLeaf) {
+			bitsBuffer.add(false);
+			bitsBuffer.add(reversedCode);
+		} else {
+			bitsBuffer.add(true);
+			left.BuildBitListFromTree(bitsBuffer);
+			right.BuildBitListFromTree(bitsBuffer);
+		}
 	}
 }

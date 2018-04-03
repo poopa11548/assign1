@@ -39,9 +39,10 @@ public class HufmannEncoderDecoder implements compressor {
 				PriorityQueue<HufmannNode> minHeap = new PriorityQueue<>(frequencies.values());
 				
 				// build tree from priority until priority size is one
-				HufmannNode hufmannTree = HufmannNode.BuildTree(minHeap);
+				HufmannNode hufmannTree = HufmannNode.BuildTreeFromHeap(minHeap);
 				
-				BitsBuffer bitsBuffer = new BitsBuffer(hufmannTree);
+				BitList bitsBuffer = BitList.newInstance();
+				hufmannTree.BuildBitListFromTree(bitsBuffer);
 				
 				for (byte b : bytes) {
 					bitsBuffer.add(frequencies.get(b).getReversedCode());
@@ -65,7 +66,7 @@ public class HufmannEncoderDecoder implements compressor {
 		for (int i = 0; i < input_names.length; i++) {
 			try {
 				byte[] bytesFromFile = Utils.GetFileAsBytes(input_names[i]);
-				BitSetIterator iterator = new BitSetIterator(bytesFromFile);
+				BitList iterator = BitList.newInstance(bytesFromFile);
 				HufmannNode hufmannTree = new HufmannNode(iterator);
 				//System.out.println("Hufmann tree size: " + hufmannTree.addToBuffer().length());
 				LinkedList<Byte> decompressed = new LinkedList<>();

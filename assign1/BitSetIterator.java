@@ -8,7 +8,7 @@ public class BitSetIterator implements Iterator<Boolean> {
 	int current_index = 0;
 	BitSetBuilder bitSet;
 	
-	public BitSetIterator(byte[] bytes) {
+	private BitSetIterator(byte[] bytes) {
 		bitSet = new BitSetBuilder(BitSet.valueOf(bytes), bytes.length * 8);
 	}
 	

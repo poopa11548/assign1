@@ -4,17 +4,18 @@ import java.util.Iterator;
 
 public class BitsBuffer implements Buffer {
 	private int paddingBits;
-	private BitSetBuilder bitSet = new BitSetBuilder(0);
+	private BitList bitSet;
 	private int currentIndex = -1;
 	
-	public BitsBuffer(HufmannNode head) {
+	/*public BitsBuffer(HufmannNode head) {
 		head.addToBuffer(this);
 		//this.paddingBits = 8 - ((currentIndex + 1) % 8);
-	}
+	}*/
 	
 	@Override
 	public void add(boolean b) {
-		bitSet.set(++currentIndex, b);
+		bitSet.add(b);
+		currentIndex++;
 	}
 	
 	@Override
@@ -25,7 +26,7 @@ public class BitsBuffer implements Buffer {
 	
 	@Override
 	public Iterator<Boolean> iterator() {
-		return new BitSetIterator(bitSet);
+		return null;// BitSetIterator(bitSet);
 	}
 	
 	@Override
