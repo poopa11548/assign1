@@ -15,7 +15,6 @@ import base.compressor;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public class HufmannEncoderDecoder implements compressor {
@@ -46,6 +45,7 @@ public class HufmannEncoderDecoder implements compressor {
 				
 				for (byte b : bytes) {
 					bitsBuffer.add(frequencies.get(b).getReversedCode());
+					System.out.println(bitsBuffer.length());
 				}
 				//System.out.println("Tree string length: " + treeString.length());
 				byte[] bytesToFile = bitsBuffer.toByteArray();// Utils.GetByteArrayFromString(treeString + builder.toString());
@@ -66,15 +66,16 @@ public class HufmannEncoderDecoder implements compressor {
 		for (int i = 0; i < input_names.length; i++) {
 			try {
 				byte[] bytesFromFile = Utils.GetFileAsBytes(input_names[i]);
-				BitList iterator = BitList.newInstance(bytesFromFile);
-				HufmannNode hufmannTree = new HufmannNode(iterator);
-				//System.out.println("Hufmann tree size: " + hufmannTree.addToBuffer().length());
-				LinkedList<Byte> decompressed = new LinkedList<>();
-				while (iterator.hasNext())
-					decompressed.addLast(hufmannTree.getValue(iterator));
+				System.out.println("Bytes from file: " + bytesFromFile.length);
 				
-				//System.out.println("More bytes: " + iterator.nextLengthInFullBytes());
-				Utils.WriteByteArrayToFile(Utils.ConvertObjectToByte(decompressed.toArray()), output_names[i]);
+				BitList compressedBitList = BitList.newInstance(bytesFromFile);
+				BitList decompressed = BitList.newInstance();
+				HufmannNode hufmannTree = new HufmannNode(compressedBitList);
+				System.out.println("Compreswsed: " + compressedBitList.toString());
+				while (compressedBitList.hasNext())
+					decompressed.add(hufmannTree.getValue(compressedBitList));
+				
+				Utils.WriteByteArrayToFile(decompressed.toByteArray(), output_names[i]);
 				
 			} catch (IOException e) {
 				e.printStackTrace();

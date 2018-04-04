@@ -1,7 +1,6 @@
 package assign1;
 
 import java.io.EOFException;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
@@ -36,7 +35,6 @@ public class HufmannNode implements Comparable {
 		if (!builder.hasNext())
 			throw new EOFException("No more bits to build tree");
 		boolean bit = builder.next();
-		//System.out.println(bit?"1":"0");
 		if (bit) {
 			if (left != null || right != null) {
 				throw new IllegalArgumentException("Error here. this is wired");
@@ -48,26 +46,6 @@ public class HufmannNode implements Comparable {
 		} else {
 			isLeaf = true;
 			value = builder.nextByte();
-		}
-	}
-	
-	public HufmannNode(Iterator<Boolean> iterator) throws EOFException {
-		if (!iterator.hasNext())
-			throw new EOFException("No more bits to build tree");
-		boolean bit = iterator.next();
-		// DEL System.out.println(bit ? 0 : 1);
-		if (bit) {
-			if (left != null || right != null) {
-				throw new IllegalArgumentException("Error here. this is wired");
-			}
-			isLeaf = false;
-			left = new HufmannNode(iterator);
-			right = new HufmannNode(iterator);
-			
-			// DEL System.out.println(Utils.ByteToString(value));
-		} else {
-			isLeaf = true;
-			value = Utils.NextBitFromIterator(iterator);
 		}
 	}
 	
@@ -199,7 +177,7 @@ public class HufmannNode implements Comparable {
 		return Objects.hash(reversedCode, value, isLeaf);
 	}
 	
-	public byte getValue(Iterator<Boolean> iterator) throws EOFException {
+	public byte getValue(BitList iterator) throws EOFException {
 		if (!iterator.hasNext()) throw new EOFException("End of Iterator");
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);
