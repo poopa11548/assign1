@@ -14,17 +14,13 @@ public class HufmannNode implements Comparable {
 	private HufmannNode right;
 	private boolean isLeaf;
 	
-	private HufmannNode() {
-		left = null;
-		right = null;
-	}
-	
 	public HufmannNode(byte value) {
 		this.value = value;
 		this.frequency = 0;
 		this.left = null;
 		this.right = null;
-		isLeaf = true;
+		this.isLeaf = true;
+		this.reversedCode = BitList.newInstance();
 	}
 	
 	public HufmannNode(HufmannNode left, HufmannNode right) {
@@ -40,7 +36,7 @@ public class HufmannNode implements Comparable {
 		if (!builder.hasNext())
 			throw new EOFException("No more bits to build tree");
 		boolean bit = builder.next();
-		// DEL System.out.println(bit ? 0 : 1);
+		//System.out.println(bit?"1":"0");
 		if (bit) {
 			if (left != null || right != null) {
 				throw new IllegalArgumentException("Error here. this is wired");
@@ -49,7 +45,6 @@ public class HufmannNode implements Comparable {
 			left = new HufmannNode(builder);
 			right = new HufmannNode(builder);
 			
-			// DEL System.out.println(Utils.ByteToString(value));
 		} else {
 			isLeaf = true;
 			value = builder.nextByte();
@@ -214,7 +209,7 @@ public class HufmannNode implements Comparable {
 	public void BuildBitListFromTree(BitList bitsBuffer) {
 		if (isLeaf) {
 			bitsBuffer.add(false);
-			bitsBuffer.add(reversedCode);
+			bitsBuffer.add(value);
 		} else {
 			bitsBuffer.add(true);
 			left.BuildBitListFromTree(bitsBuffer);

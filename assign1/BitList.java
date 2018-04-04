@@ -1,5 +1,6 @@
 package assign1;
 
+import java.io.EOFException;
 import java.util.Iterator;
 
 public interface BitList extends Iterator<Boolean> {
@@ -19,11 +20,11 @@ public interface BitList extends Iterator<Boolean> {
 	
 	byte[] toByteArray();
 	
-	byte nextByte();
-	
-	void set(int index);
+	byte nextByte() throws EOFException;
 	
 	int length();
 	
-	void set(int index, boolean value);
+	int hasNextLength();
+	
+	void add(byte value);
 }

@@ -19,7 +19,7 @@ class UtilsTest {
 	
 	private static byte[] bytes;
 	private static Hashtable<Byte, Integer> constFrequencies;
-	private static final int count = 10;
+	private static final int count = 10000;
 	private static Random rnd = new Random();
 	
 	public static Hashtable<Byte, Integer> staticGetFrequencies() {

@@ -10,12 +10,12 @@ class BitsBufferTest {
 	void sizeTest() {
 		BitList bitSet = BitList.newInstance();
 		for (int i = 0; i < 20; i++) {
-			bitSet.set(i);
+			bitSet.add(true);
 			assertEquals(i + 1, bitSet.length());
 		}
 		bitSet = BitList.newInstance();
 		for (int i = 0; i < 20; i++) {
-			bitSet.set(i, false);
+			bitSet.add(false);
 			assertEquals(i + 1, bitSet.length());
 		}
 		

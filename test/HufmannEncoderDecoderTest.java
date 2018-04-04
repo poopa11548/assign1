@@ -45,7 +45,7 @@ class HufmannEncoderDecoderTest {
 	}
 	
 	@Test
-	void DeCompress() {
+	void DeCompress() throws IOException {
 		try {
 			File from = new File("tocompress.de"), temp = new File("temp.de"), to = new File("decompress.de");
 			String[] input_names = {from.getPath()}, temp_names = {temp.getPath()}, output_names = {to.getPath()};
@@ -60,6 +60,7 @@ class HufmannEncoderDecoderTest {
 			assertEquals(from.length(), to.length());
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
 	}
 }
