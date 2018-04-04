@@ -1,14 +1,6 @@
 package assign1;
 
-import java.io.EOFException;
-import java.util.Iterator;
-
-public interface BitList extends Iterator<Boolean> {
-	
-	void add(boolean value);
-	
-	void add(BitList reversedCode);
-	
+public interface BitList extends Iterable<Boolean> {
 	//For change in all program
 	static BitList newInstance(byte[] bytes) {
 		return BitSetList.newInstance(bytes);
@@ -18,13 +10,21 @@ public interface BitList extends Iterator<Boolean> {
 		return BitSetList.newInstance();
 	}
 	
-	byte[] toByteArray();
+	void add(boolean value);
 	
-	byte nextByte() throws EOFException;
+	void add(BitListIterator reversedCode);
+	
+	byte[] toByteArray();
 	
 	int length();
 	
-	int hasNextLength();
-	
 	void add(byte value);
+	
+	@Override
+	BitListIterator iterator();
+	
+	BitListIterator reverseIterator();
+	
+	Boolean get(int index);
+	
 }

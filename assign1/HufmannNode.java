@@ -31,7 +31,7 @@ public class HufmannNode implements Comparable {
 		right.setReversedCode(false);
 	}
 	
-	public HufmannNode(BitList builder) throws EOFException {
+	public HufmannNode(BitListIterator builder) throws EOFException {
 		if (!builder.hasNext())
 			throw new EOFException("No more bits to build tree");
 		boolean bit = builder.next();
@@ -108,8 +108,8 @@ public class HufmannNode implements Comparable {
 		throw new IllegalArgumentException("Argument must be instance of HufmannNode");
 	}
 	
-	public BitList getReversedCode() {
-		return reversedCode;
+	public BitListIterator getCodeIterator() {
+		return reversedCode.reverseIterator();
 	}
 	
 	private void setReversedCode(boolean s) {
@@ -177,7 +177,7 @@ public class HufmannNode implements Comparable {
 		return Objects.hash(reversedCode, value, isLeaf);
 	}
 	
-	public byte getValue(BitList iterator) throws EOFException {
+	public byte getValue(BitListIterator iterator) throws EOFException {
 		if (!iterator.hasNext()) throw new EOFException("End of Iterator");
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);

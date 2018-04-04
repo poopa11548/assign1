@@ -31,7 +31,7 @@ class HufmannNodeTest {
 			BitList buffer = BitList.newInstance();
 			head.BuildBitListFromTree(buffer);
 			//System.out.println(buffer.toString());
-			HufmannNode after = new HufmannNode(buffer);
+			HufmannNode after = new HufmannNode(buffer.iterator());
 			
 			assertEquals(head, after);
 			

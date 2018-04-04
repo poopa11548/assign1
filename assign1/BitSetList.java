@@ -1,23 +1,19 @@
 package assign1;
 
-import java.io.EOFException;
 import java.util.BitSet;
 
 public class BitSetList implements BitList {
 	private int size;
 	private BitSet bitSet;
-	private int index;
 	
 	private BitSetList() {
 		this.bitSet = new BitSet(0);
 		this.size = 0;
-		index = 0;
 	}
 	
 	private BitSetList(byte[] bytes) {
 		this.bitSet = BitSet.valueOf(bytes);
 		this.size = bytes.length * 8;
-		index = 0;
 	}
 	
 	public static BitSetList newInstance() {
@@ -34,7 +30,7 @@ public class BitSetList implements BitList {
 	}
 	
 	@Override
-	public void add(BitList bitList) {
+	public void add(BitListIterator bitList) {
 		while (bitList.hasNext())
 			this.add(bitList.next());
 	}
@@ -45,28 +41,8 @@ public class BitSetList implements BitList {
 	}
 	
 	@Override
-	public byte nextByte() throws EOFException {
-		if (hasNextLength() < 8) throw new EOFException("Less then byte are left");
-		byte result = 0;
-		for (int i = 0; i < 8; i++) {
-			result <<= 1;
-			if (next()) {
-				result |= 1;
-				System.out.print("1");
-			} else System.out.print("0");
-		}
-		System.out.println("");
-		return result;
-	}
-	
-	@Override
 	public int length() {
 		return size;
-	}
-	
-	@Override
-	public int hasNextLength() {
-		return size - index;
 	}
 	
 	@Override
@@ -74,16 +50,6 @@ public class BitSetList implements BitList {
 		for (int i = 7; i >= 0; i--) {
 			add((value & (1 << i)) > 0);
 		}
-	}
-	
-	@Override
-	public boolean hasNext() {
-		return index < size;
-	}
-	
-	@Override
-	public Boolean next() {
-		return bitSet.get(index++);
 	}
 	
 	@Override
@@ -95,5 +61,21 @@ public class BitSetList implements BitList {
 		return "BitSetList{" +
 				"bitSet=" + builder.toString() +
 				'}';
+	}
+	
+	
+	@Override
+	public Boolean get(int index) {
+		return this.bitSet.get(index);
+	}
+	
+	@Override
+	public BitListIterator iterator() {
+		return new BitListIterator(this);
+	}
+	
+	@Override
+	public BitListIterator reverseIterator() {
+		return new BitListIterator(this, true);
 	}
 }
