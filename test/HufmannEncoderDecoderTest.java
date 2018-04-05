@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class HufmannEncoderDecoderTest {
@@ -63,6 +62,7 @@ class HufmannEncoderDecoderTest {
 				System.out.println(toBinary(fromArr[i]) + "\t<>\t" + toBinary(toArr[i]));
 			for (; i < fromArr.length; i++)
 				System.out.println(toBinary(fromArr[i]) + "\t<>");
+			assertArrayEquals(fromArr, toArr);
 			assertEquals(from.length(), to.length());
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -25,4 +25,6 @@ public interface BitList extends Iterable<Boolean> {
 	BitListIterator reverseIterator();
 	
 	Boolean get(int index);
+	
+	byte getByte(int index);
 }

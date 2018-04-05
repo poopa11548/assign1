@@ -38,19 +38,18 @@ final class BitListIterator implements Iterator<Boolean> {
 	}
 	
 	private int step() {
+		return step(1);
+	}
+	
+	private int step(int count) {
 		int result = index;
-		index = index + (reverse ? -1 : 1);
+		index = index + (reverse ? -count : count);
 		return result;
 	}
 	
 	public byte nextByte() throws EOFException {
 		if (hasNextLength() < 8) throw new EOFException("Less then byte are left");
-		byte result = 0;
-		for (int i = 0; i < 8; i++) {
-			result <<= 1;
-			if (next()) result |= 1;
-		}
-		return result;
+		return bitList.getByte(step(8));
 	}
 	
 	public int hasNextLength() {

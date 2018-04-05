@@ -104,6 +104,16 @@ public class BitSetList implements BitList {
 	}
 	
 	@Override
+	public byte getByte(int index) {
+		byte result = 0;
+		for (int i = index + 7; i >= index; i--) {
+			result <<= 1;
+			if (bitSet.get(i)) result |= 1;
+		}
+		return result;
+	}
+	
+	@Override
 	public BitListIterator iterator() {
 		return new BitListIterator(this, isPaddingInFirstByte ? 8 : 0);
 	}
