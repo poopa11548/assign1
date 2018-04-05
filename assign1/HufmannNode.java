@@ -19,7 +19,7 @@ public class HufmannNode implements Comparable {
 		this.left = null;
 		this.right = null;
 		this.isLeaf = true;
-		this.reversedCode = BitList.newInstance();
+		this.reversedCode = BitList.newInstance(false);
 	}
 	
 	public HufmannNode(HufmannNode left, HufmannNode right) {
@@ -177,14 +177,17 @@ public class HufmannNode implements Comparable {
 		return Objects.hash(reversedCode, value, isLeaf);
 	}
 	
-	public byte getValue(BitListIterator iterator) throws EOFException {
-		if (!iterator.hasNext()) throw new EOFException("End of Iterator");
+	public Byte getValue(BitListIterator iterator) {
+		if (!iterator.hasNext()) {
+			System.out.println("End of iterator. " + iterator.hasNextLength() + " bits are left");
+			return null;
+		}
 		if (isLeaf) return value;
 		if (iterator.next()) return left.getValue(iterator);
 		return right.getValue(iterator);
 	}
 	
-	public void BuildBitListFromTree(BitList bitsBuffer) {
+	private void BuildBitListFromTree(BitList bitsBuffer) {
 		if (isLeaf) {
 			bitsBuffer.add(false);
 			bitsBuffer.add(value);
@@ -193,5 +196,11 @@ public class HufmannNode implements Comparable {
 			left.BuildBitListFromTree(bitsBuffer);
 			right.BuildBitListFromTree(bitsBuffer);
 		}
+	}
+	
+	public BitList BuildBitListFromTree() {
+		BitList bitList = BitList.newInstance(true);
+		this.BuildBitListFromTree(bitList);
+		return bitList;
 	}
 }

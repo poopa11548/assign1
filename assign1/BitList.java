@@ -2,14 +2,13 @@ package assign1;
 
 public interface BitList extends Iterable<Boolean> {
 	//For change in all program
-	static BitList newInstance(byte[] bytes) {
-		return BitSetList.newInstance(bytes);
+	static BitList newInstance(boolean saveByteToPaddingCount) {
+		return BitSetList.newInstance(saveByteToPaddingCount);
 	}
 	
-	static BitList newInstance() {
-		return BitSetList.newInstance();
+	static BitList newInstance(byte[] bytes, boolean isSizeIn) {
+		return BitSetList.newInstance(bytes, isSizeIn);
 	}
-	
 	void add(boolean value);
 	
 	void add(BitListIterator reversedCode);
@@ -26,5 +25,4 @@ public interface BitList extends Iterable<Boolean> {
 	BitListIterator reverseIterator();
 	
 	Boolean get(int index);
-	
 }

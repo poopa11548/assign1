@@ -40,15 +40,12 @@ public class HufmannEncoderDecoder implements compressor {
 				// build tree from priority until priority size is one
 				HufmannNode hufmannTree = HufmannNode.BuildTreeFromHeap(minHeap);
 				
-				BitList bitsBuffer = BitList.newInstance();
-				hufmannTree.BuildBitListFromTree(bitsBuffer);
+				BitList bitsBuffer = hufmannTree.BuildBitListFromTree();
 				
 				for (byte b : bytes) {
 					bitsBuffer.add(frequencies.get(b).getCodeIterator());
-					System.out.println(bitsBuffer.length());
 				}
-				//System.out.println("Tree string length: " + treeString.length());
-				byte[] bytesToFile = bitsBuffer.toByteArray();// Utils.GetByteArrayFromString(treeString + builder.toString());
+				byte[] bytesToFile = bitsBuffer.toByteArray();
 				System.out.println("Bytes to file length: " + bytesToFile.length);
 				Utils.WriteByteArrayToFile(bytesToFile, output_names[i]);
 			} catch (IOException e) {
@@ -63,17 +60,19 @@ public class HufmannEncoderDecoder implements compressor {
 	public void Decompress(String[] input_names, String[] output_names) {
 		if (input_names.length != output_names.length)
 			throw new IllegalArgumentException("The Input and Output arrays must be in same length");
+		
 		for (int i = 0; i < input_names.length; i++) {
 			try {
 				byte[] bytesFromFile = Utils.GetFileAsBytes(input_names[i]);
-				System.out.println("Bytes from file: " + bytesFromFile.length);
-				
-				BitListIterator compressedBitListIterator = BitList.newInstance(bytesFromFile).iterator();
-				BitList decompressed = BitList.newInstance();
+				System.out.println("Bytes from file length: " + bytesFromFile.length);
+				BitListIterator compressedBitListIterator = BitList.newInstance(bytesFromFile, true).iterator();
+				BitList decompressed = BitList.newInstance(false);
 				HufmannNode hufmannTree = new HufmannNode(compressedBitListIterator);
-				System.out.println("Compreswsed: " + compressedBitListIterator.toString());
-				while (compressedBitListIterator.hasNext())
-					decompressed.add(hufmannTree.getValue(compressedBitListIterator));
+				
+				while (compressedBitListIterator.hasNext()) {
+					Byte value = hufmannTree.getValue(compressedBitListIterator);
+					if (value != null) decompressed.add(value);
+				}
 				
 				Utils.WriteByteArrayToFile(decompressed.toByteArray(), output_names[i]);
 				

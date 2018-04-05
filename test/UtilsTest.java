@@ -83,7 +83,7 @@ class UtilsTest {
 	
 	@Test
 	void bits() {
-		BitList bitList = BitList.newInstance(bytes);
+		BitList bitList = BitList.newInstance(bytes, false);
 		
 		byte tr = (byte) 256;
 		byte b = (byte) 0b10010100;

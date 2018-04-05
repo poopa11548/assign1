@@ -45,7 +45,7 @@ class HufmannEncoderDecoderTest {
 	}
 	
 	@Test
-	void DeCompress() throws IOException {
+	void Decompress() throws IOException {
 		try {
 			File from = new File("tocompress.de"), temp = new File("temp.de"), to = new File("decompress.de");
 			String[] input_names = {from.getPath()}, temp_names = {temp.getPath()}, output_names = {to.getPath()};
@@ -57,10 +57,20 @@ class HufmannEncoderDecoderTest {
 			Utils.WriteByteArrayToFile(bytes, from.getPath());
 			compressorObject.Compress(input_names, temp_names);
 			compressorObject.Decompress(temp_names, output_names);
+			byte[] fromArr = Utils.GetFileAsBytes(from.getPath()), toArr = Utils.GetFileAsBytes(to.getPath());
+			int i;
+			for (i = 0; i < toArr.length; i++)
+				System.out.println(toBinary(fromArr[i]) + "\t<>\t" + toBinary(toArr[i]));
+			for (; i < fromArr.length; i++)
+				System.out.println(toBinary(fromArr[i]) + "\t<>");
 			assertEquals(from.length(), to.length());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	private String toBinary(byte b) {
+		return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
 	}
 }

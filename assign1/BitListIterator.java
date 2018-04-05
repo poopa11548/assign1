@@ -3,7 +3,7 @@ package assign1;
 import java.io.EOFException;
 import java.util.Iterator;
 
-class BitListIterator implements Iterator<Boolean> {
+final class BitListIterator implements Iterator<Boolean> {
 	private final boolean reverse;
 	private BitList bitList;
 	private int index;
@@ -19,6 +19,12 @@ class BitListIterator implements Iterator<Boolean> {
 		this.reverse = reverse;
 		if (reverse) index = bitList.length() - 1;
 		else index = 0;
+	}
+	
+	public BitListIterator(BitList bitList, int startIndex) {
+		this.bitList = bitList;
+		this.reverse = false;
+		index = startIndex;
 	}
 	
 	@Override
@@ -42,17 +48,13 @@ class BitListIterator implements Iterator<Boolean> {
 		byte result = 0;
 		for (int i = 0; i < 8; i++) {
 			result <<= 1;
-			if (next())// {
-				result |= 1;
-			//	System.out.print("1");
-			//} else System.out.print("0");
+			if (next()) result |= 1;
 		}
-		//System.out.println("");
 		return result;
 	}
 	
 	public int hasNextLength() {
 		if (reverse) return index + 1;
-		return bitList.length() - index;
+		return bitList.length() - index + 1;
 	}
 }

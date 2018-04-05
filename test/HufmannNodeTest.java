@@ -28,8 +28,7 @@ class HufmannNodeTest {
 		try {
 			HufmannNode head = HufmannNode.BuildTreeFromHeap(new PriorityQueue<>(Utils.GetFrequencies(bytes).values()));
 			
-			BitList buffer = BitList.newInstance();
-			head.BuildBitListFromTree(buffer);
+			BitList buffer = head.BuildBitListFromTree();
 			//System.out.println(buffer.toString());
 			HufmannNode after = new HufmannNode(buffer.iterator());
 			
