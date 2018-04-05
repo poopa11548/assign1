@@ -19,7 +19,7 @@ class HufmannNodeTest {
 	
 	@BeforeAll
 	static void classSetUp() {
-		bytes = UtilsTest.getByteRandom();// new byte[100];
+		bytes = Consts.getByteRandom();// new byte[100];
 		//rnd.nextBytes(bytes);
 	}
 	
