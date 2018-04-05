@@ -7,20 +7,18 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.PriorityQueue;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HufmannNodeTest {
 	
 	private static byte[] bytes;
-	private static Random rnd = new Random();
 	
 	@BeforeAll
-	static void classSetUp() {
-		bytes = Consts.getByteRandom();// new byte[100];
-		//rnd.nextBytes(bytes);
+	static void classSetUp() throws IOException {
+		bytes = Utils.GetFileAsBytes(Consts.files_example[1]);
 	}
 	
 	@Test

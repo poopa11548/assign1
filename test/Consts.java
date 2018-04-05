@@ -1,29 +1,31 @@
 package test;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Random;
-
 public class Consts {
 	public static final String[] files_example = {
 			"Ass1ExampeInputs/london_in_polish_source.txt",
 			"Ass1ExampeInputs/OnTheOrigin.txt",
 			"Ass1ExampeInputs/OnTheOrigin_C2.txt",
-			"Ass1ExampeInputs/YouKnowThisSound"
+			//"Ass1ExampeInputs/YouKnowThisSound",
+			//"Ass1ExampeInputs/MyFile.txt",
+			"Ass1ExampeInputs/MyFile"
 	};
 	public static final String[] files_output = {
 			"Ass1Outputs/london_in_polish_source.txt",
 			"Ass1Outputs/OnTheOrigin.txt",
 			"Ass1Outputs/OnTheOrigin_C2.txt",
-			"Ass1Outputs/YouKnowThisSound"
+			//"Ass1Outputs/YouKnowThisSound",
+			//"Ass1Outputs/MyFile.txt",
+			"Ass1Outputs/MyFile"
 	};
 	public static final String[] files_decompressed = {
 			"Ass1Decompressed/london_in_polish_source.txt",
 			"Ass1Decompressed/OnTheOrigin.txt",
 			"Ass1Decompressed/OnTheOrigin_C2.txt",
-			"Ass1Decompressed/YouKnowThisSound"
+			//"Ass1Decompressed/YouKnowThisSound",
+			//"Ass1Decompressed/MyFile.txt",
+			"Ass1Decompressed/MyFile"
 	};
-	private static final int count = 100;
+	/*private static final int count = 100;
 	private static Random rnd = new Random();
 	
 	public static Hashtable<Byte, Integer> staticGetFrequencies() {
@@ -76,5 +78,5 @@ public class Consts {
 		/*for (int i = rnd.nextInt(count - 1) + 1; count > 4; count -= i, i = rnd.nextInt(count > 1 ? count - 1 : 1) + 1)
 			frequencies.put((byte) rnd.nextInt(256), i);
 		frequencies.put((byte) rnd.nextInt(256), count);*/
-	}
+	//}*/
 }
