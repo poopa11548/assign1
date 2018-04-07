@@ -107,8 +107,6 @@ class Node implements Comparable<Node>{
        	int x=k-bits.length();
        	byte ByteZeroEnd=(byte)x;//count zero lest
        	out.write(ByteZeroEnd);
-       	System.out.println("x1="+ByteTree.length);
-     	System.out.println("x2="+ByteCode.length);
        	out.write(ByteTree);
        	out.write(ByteCode);
        	out.close();
@@ -119,7 +117,7 @@ class Node implements Comparable<Node>{
 			String str=Integer.toBinaryString(root.ch) ;
 			while(str.length()!=8)
 				str="0"+str;
-			return "0"+str ;
+			return "0"+str;
 		}
 		return "1"+RootToString(root.left)+RootToString(root.right);
 	}
@@ -185,7 +183,6 @@ class Node implements Comparable<Node>{
 			}
 			
 		return pq.poll();
-		
 	}
 	public int ByteToInt(byte b){
 		int ret=0;
@@ -196,7 +193,6 @@ class Node implements Comparable<Node>{
 		}
 		return ret;
 	}
-	@Override
 	public void Decompress(String[] input_names, String[] output_names) throws IOException
 	{
 		File file=new File(input_names[0]);
@@ -262,7 +258,6 @@ class Node implements Comparable<Node>{
 		BuildTree(root.left, bits,k);
 		BuildTree(root.right, bits,k);
 		}
-	@Override
 	public byte[] CompressWithArray(String[] input_names, String[] output_names) throws IOException
 	{
 		int []  freq=new int [256];
