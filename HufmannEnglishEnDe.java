@@ -23,21 +23,29 @@ import java.util.Vector;
 
 public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 {
-	static String[] SpecialWord={" because "," the "," that "," have "," for "," this "," but "," his "," from "," they "," and "," be "," to "," of "," with "};
+	static String[] SpecialWord={ " I "," a " , " about " ," after ", " all ",  " also " ,
+		 " an ", " and " , " any ", " as " , " at " , " back ", " be ",
+		" because ", " but ", " by ", " can ", " come ", " could ",
+		 " day ", " do ", " even ", " first "," for ", " from ",
+		 " get ", " give ", " go ", " good ", " have ",
+		" he ", " her ", " him ", " his ", " how ", " if ",
+		 " in ", " into ", " it ", " its "," just "," know ", " like ", " look ",
+		 " make ", " me ", " most ", " my ", " new ", " no ", " not ", " now ", " of ",
+		 " on ", " one "," only ", " or ", " other ", " our ", " out ", " over ", " people ",
+		  " say " , " see ", " she ", " so ", " some ", " take "," than ", " that ",
+		 " the ", " their ", " them "," then ", " there ", " these ", " they ", " think ",
+		 " this " , " time ",  " to " , " two ", " up ", " us ", " use ", " want ", " way ",
+		 " we ", " well "," what "," when ", " which ", " who ", " will ", " with ",
+		 " work " , " would ", " year ", " you ", " your "};
 	class Node implements Comparable<Node>{
-		char[] ch=new char[2];
+		char ch;
 		int freq;
 		String Special;
 		boolean[] code;
 		Node right=null;
 		Node left=null;
 		public Node(char _ch, int _freq){
-			ch[0]=_ch;
-			freq=_freq;
-		}
-		public Node(char[] _ch, int _freq){
-			ch[0]=_ch[0];
-			ch[1]=_ch[1];
+			ch=_ch;
 			freq=_freq;
 		}
 		public Node(String _Special,int _freq){
@@ -57,15 +65,6 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 			right=_right;
 			freq=_left.freq+_right.freq;
 		}
-		public void SetCode(String s){
-			code=new boolean[s.length()];
-			for(int i=0;i<s.length();i++){
-				if(s.charAt(i)=='1')
-					code[i]=true;
-				else
-					code[i]=false;
-			}
-		}
 		public int compareTo(Node node) {
 			return freq-node.freq;
 		}
@@ -76,7 +75,8 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 	}
 	public void Compress(String[] input_names, String[] output_names) throws IOException
 	{
-		int [][]  freq=new int [256][257];
+		byte[] b=CompressWithArray(input_names, output_names);
+		/*int []  freq=new int [256];
 		File file=new File(input_names[0]);
 		InputStream input = new FileInputStream(file);
 		File file2=new File(output_names[0]);
@@ -84,110 +84,111 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 		byte[] Bytes = new byte[(int)file.length()];
         input.read(Bytes, 0, Bytes.length);
         for(int i=0;i<Bytes.length;i++){
-        	freq[ByteToInt(Bytes[i])][256]++;
-        	if(i!=Bytes.length-1)
-        		freq[ByteToInt(Bytes[i])][ByteToInt(Bytes[i+1])]++;
+        	freq[ByteToInt(Bytes[i])]++;
         }
         Node rootfreq=buildTree(freq,Bytes.length);
         String StringTree= RootToString(rootfreq);
         Node SpecialRoot=BuildSpecialTree();
         Node root=buildFinshTree(rootfreq,SpecialRoot);
         SetCode(root,"");
-        Node[][] nodes=new Node[256][257];
+        Node[] nodes=new Node[256];
         Node[] SpecialNode=new Node[SpecialWord.length];
         fillNodes(root,nodes,SpecialNode);
         BitSet bits=new BitSet();
         byte[] ByteTree = ByteFromString(StringTree);
-        int k=0,i=0;//index for BitSet
+       int k=0,i=0;//index for BitSet
         while(i<Bytes.length){
-        	for(int h=0;h<SpecialWord.length;h++){
-        		if(checkWord(Bytes,i,SpecialWord[h])){
-        			for(int j=0;j<SpecialNode[h].code.length;j++){
-        				if(SpecialNode[h].code[j])
-        					bits.set(k);
-        				k++;
-        			}
-        			i=i+SpecialWord[h].length();
-        			h=0;	
-        		}
-        	}
-        	if(i==Bytes.length)
-        		continue;
-        	if(i>=Bytes.length-1){
-        		for(int j=0;j<nodes[ByteToInt(Bytes[i])][256].code.length;j++){
-             		if(nodes[ByteToInt(Bytes[i])][256].code[j])
+        	if(Bytes[i]!=' '){
+        		for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
+             		if(nodes[ByteToInt(Bytes[i])].code[j])
              			bits.set(k);
              	k++;
         	}
         		 i++;
         	}
-        	else if(nodes[ByteToInt(Bytes[i])][ByteToInt(Bytes[i+1])]!=null){
-        		
-           		 for(int j=0;j<nodes[ByteToInt(Bytes[i])][ByteToInt(Bytes[i+1])].code.length;j++){
-                 		if(nodes[ByteToInt(Bytes[i])][ByteToInt(Bytes[i+1])].code[j])
-                 			bits.set(k);
-                 	k++;
-           	 }
-           		 i=i+2;
-           	 }
+        	else{
+        	   int key=checkWord(Bytes,i,0,SpecialWord.length);
+        		if(key!=SpecialWord.length){
+        			for(int j=0;j<SpecialNode[key].code.length;j++){
+        				if(SpecialNode[key].code[j])
+        					bits.set(k);
+        				k++;
+        			}
+        			i=i+SpecialWord[key].length();
+        		}
+        	
         		else{
-        		 for(int j=0;j<nodes[ByteToInt(Bytes[i])][256].code.length;j++){
-             		if(nodes[ByteToInt(Bytes[i])][256].code[j])
+        		 for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
+             		if(nodes[ByteToInt(Bytes[i])].code[j])
              			bits.set(k);
              	k++;
         	}
         		 i++;
         	 }
-        	
+        	}
       }
-        //print(root);
+        bits.set(k);
         byte[] ByteCode = bits.toByteArray();
-       	int x=k-bits.length();
-       	byte ByteZeroEnd=(byte)x;//count zero lest
-       	out.write(ByteZeroEnd);
        	out.write(ByteTree);
        	out.write(ByteCode);
        	out.close();
-       	input.close();
+       	input.close();*/
 	}
 	private Node buildFinshTree(Node rootfreq, Node specialRoot) {
 		Node temp=rootfreq;
-		while(temp.right.right!=null)
-			temp=temp.right;
-	Node node=new Node(temp.right,specialRoot);
-	temp.right=node;
+		while(temp.left.left!=null)
+			temp=temp.left;
+	Node node=new Node(temp.left,specialRoot);
+	temp.left=node;
 	return rootfreq;
 	}
-	public boolean checkWord(byte[] bytes,int i,String word){
+	public int checkWord(byte[] bytes,int i,int left,int right){
+		if(left>right)
+			return SpecialWord.length;
+		int mid=(left+right)/2;
+		if(mid==-1||mid==SpecialWord.length)
+			return SpecialWord.length;
+		int key=checkWord(bytes,i, SpecialWord[mid]);
+		if(key==2)
+			return SpecialWord.length;
+		else if(key==1)
+			return checkWord(bytes,i, mid+1, right);
+		else if(key==-1){
+			return checkWord(bytes,i, left, mid-1);
+		}
+		else{
+		return mid;
+		}
+	}
+	public int checkWord(byte[] bytes,int i,String word){
 		for(int j=0;j<word.length();j++){
 			if(i+j==bytes.length)
-				return false;
-			if(bytes[j+i]!=word.charAt(j))
-				return false;
+				return 2;
+			else if(ByteToInt(bytes[j+i])<word.charAt(j))
+				return -1;
+			else if(ByteToInt(bytes[j+i])>word.charAt(j))
+				return 1;
+			
 		}
-		return true;
+		return 0;
 	}
 	private String RootToString(Node root) {
 		if(root.left==null&&root.right==null){
-			String str=Integer.toBinaryString(root.ch[0]) ;
+			String str=Integer.toBinaryString(root.ch) ;
 			while(str.length()!=8)
 				str="0"+str;
-			String str2=Integer.toBinaryString(root.ch[1]) ;
-			while(str2.length()!=8)
-				str2="0"+str2;
-			return "0"+str+str2 ;
+			return "0"+str ;
 		}
 		return "1"+RootToString(root.left)+RootToString(root.right);
 	}
-	private void fillNodes(Node root, Node[][] nodes,Node[] Special) {
+	private void fillNodes(Node root, Node[] nodes,Node[] Special) {
 		if(root.right==null&&root.left==null){
-			if(root.ch[0]==0){
+			if(root.ch==0){
 				Special[root.freq]=root;
 			}
-			else if(root.ch[1]==0)
-			nodes[(int)root.ch[0]][256]=root;
-			else
-			nodes[(int)root.ch[0]][(int)root.ch[1]]=root;
+			else 
+			nodes[(int)root.ch]=root;
+			
 			return;
 		}
 		fillNodes(root.left, nodes,Special);
@@ -198,7 +199,10 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 		if(root.right==null&&root.left==null){
 			for(int i=0;i<root.code.length;i++)
 				System.out.print(root.code[i]);
-			 System.out.println(" is the char="+root.ch[0]+root.ch[1]+" freq="+root.freq);
+			if(root.ch=='\0')
+				System.out.println(root.Special);
+			else
+			 System.out.println(" is the char="+root.ch+" freq="+root.freq);
 			 return;
 		}
 			print(root.left);
@@ -228,21 +232,12 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 		
 	return pq.poll();
 	}
-	public Node buildTree(int[][] freq,int len) {
-		//int k=0;
+	public Node buildTree(int[] freq,int len) {
 		PriorityQueue<Node> pq=new PriorityQueue<Node>();
 		for(int i=0;i<256;i++){
-			if(freq[i][256]!=0){
-				Node node=new Node((char)i,freq[i][256]);
+			if(freq[i]!=0){
+				Node node=new Node((char)i,freq[i]);
 				pq.add(node);
-			for(int j=0;j<256;j++){
-					if(freq[i][j]>len*0.05){
-						//k++;
-						char[] a={(char) i,(char) j};
-						node=new Node(a,freq[i][j]);
-						pq.add(node);
-					}
-				}
 			}
 		}
 		while(pq.size()>1){
@@ -255,16 +250,17 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 	}
 	public void Decompress(String[] input_names, String[] output_names) throws IOException
 	{
-		File file=new File(input_names[0]);
+		byte[] b=DecompressWithArray(input_names, output_names);
+		/*File file=new File(input_names[0]);
 		InputStream finput = new FileInputStream(file);
 		byte[] Bytes = new byte[(int)file.length()];
         finput.read(Bytes, 0, Bytes.length);
-        int ZeroLast=(int)Bytes[0];
+        //int ZeroLast=(int)Bytes[0];
         BitSet bits=new BitSet();
         bits=BitSet.valueOf(Bytes);
         Node rootfreq=new Node('\0', 0);
         int[] k=new int[2];//k[0] index
-        k[0]=8;//8 bits first is The amount of zeros at the last.
+        k[0]=0;// first is The amount of zeros at the last.
         BuildTree(rootfreq, bits, k);
         Node SpecialRoot=BuildSpecialTree();
         Node root=buildFinshTree(rootfreq,SpecialRoot);
@@ -272,7 +268,7 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
         for(int i=0;i<8-size;i++)//complete to byte
         	k[0]++;
         //print(root);
-        Vector<Byte> b=TreeToByte(bits,root,k,ZeroLast);
+        Vector<Byte> b=TreeToByte(bits,root,k);
         File file2=new File(output_names[0]);
         OutputStream out=new FileOutputStream(file2);
         byte[] ByteToSend=new byte[b.size()];
@@ -280,25 +276,21 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
         ByteToSend[i]=b.get(i);
         out.write(ByteToSend);
  		out.close();
- 		finput.close();   
+ 		finput.close();*/   
 	}
-	private Vector<Byte> TreeToByte(BitSet ls, Node root, int[] k,int x) {
+	private Vector<Byte> TreeToByte(BitSet ls, Node root, int[] k) {
 		Node p=root;
 		Vector<Byte> lb=new Vector<Byte>();
-		while(k[0]-1<ls.length()+x){
+		while(k[0]-1<ls.length()-1){
 			if(p.left==null&&p.right==null){
-				if(p.ch[0]==0){
+				if(p.ch==0){
 				for(int i=0;i<p.Special.length();i++)
 					lb.add((byte)p.Special.charAt(i));
 				p=root;
 				}
-				else if(p.ch[1]!=0){
-				lb.add((byte)p.ch[0]);
-				lb.add((byte)p.ch[1]);
-				p=root;
-				}
+				
 			else{
-				lb.add((byte)p.ch[0]);
+				lb.add((byte)p.ch);
 				p=root;
 			}
 		}
@@ -323,16 +315,7 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 				j--;
 				k[0]++;
 			}
-			root.ch[0]=(char)ret;
-			ret=0;
-			j=7;
-			for(int i=0;i<8;i++){//calculate the char ASCII
-				if(bits.get(k[0]))
-				ret=(int) (ret+Math.pow(2,j));
-				j--;
-				k[0]++;
-			}
-			root.ch[1]=(char)ret;
+			root.ch=(char)ret;
 			return;
 		}
 			if(bits.get(k[0]))
@@ -341,5 +324,98 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 				root.right=new Node('\0',0);
 				BuildTree(root.left, bits,k);
 				BuildTree(root.right, bits,k);
+	}
+	public byte[] CompressWithArray(String[] input_names, String[] output_names) throws IOException{
+		int []  freq=new int [256];
+		File file=new File(input_names[0]);
+		InputStream input = new FileInputStream(file);
+		File file2=new File(output_names[0]);
+	    OutputStream out=new FileOutputStream(file2);
+		byte[] Bytes = new byte[(int)file.length()];
+        input.read(Bytes, 0, Bytes.length);
+        for(int i=0;i<Bytes.length;i++){
+        	freq[ByteToInt(Bytes[i])]++;
+        }
+        Node rootfreq=buildTree(freq,Bytes.length);
+        String StringTree= RootToString(rootfreq);
+        Node SpecialRoot=BuildSpecialTree();
+        Node root=buildFinshTree(rootfreq,SpecialRoot);
+        SetCode(root,"");
+        Node[] nodes=new Node[256];
+        Node[] SpecialNode=new Node[SpecialWord.length];
+        fillNodes(root,nodes,SpecialNode);
+        BitSet bits=new BitSet();
+        byte[] ByteTree = ByteFromString(StringTree);
+       int k=0,i=0;//index for BitSet
+        while(i<Bytes.length){
+        	if(Bytes[i]!=' '){
+        		for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
+             		if(nodes[ByteToInt(Bytes[i])].code[j])
+             			bits.set(k);
+             	k++;
+        	}
+        		 i++;
+        	}
+        	else{
+        	   int key=checkWord(Bytes,i,0,SpecialWord.length);
+        		if(key!=SpecialWord.length){
+        			for(int j=0;j<SpecialNode[key].code.length;j++){
+        				if(SpecialNode[key].code[j])
+        					bits.set(k);
+        				k++;
+        			}
+        			i=i+SpecialWord[key].length();
+        		}
+        	
+        		else{
+        		 for(int j=0;j<nodes[ByteToInt(Bytes[i])].code.length;j++){
+             		if(nodes[ByteToInt(Bytes[i])].code[j])
+             			bits.set(k);
+             	k++;
+        	}
+        		 i++;
+        	 }
+        	}
+      }
+        bits.set(k);//one of last
+        byte[] ByteCode = bits.toByteArray();
+    	byte[] ByteToSend=new byte[ByteTree.length+ByteCode.length];
+        	for(int j=0;j<ByteTree.length;j++)
+        		ByteToSend[j]=ByteTree[j];
+        	for(int j=0;j<ByteCode.length;j++)
+        		ByteToSend[j+ByteTree.length]=ByteCode[j];
+     	out.write(ByteToSend);
+        	out.close();
+        	input.close();
+ 		return ByteToSend;
+		
+	}
+	public byte[] DecompressWithArray(String[] input_names, String[] output_names) throws IOException{
+		File file=new File(input_names[0]);
+		InputStream finput = new FileInputStream(file);
+		byte[] Bytes = new byte[(int)file.length()];
+        finput.read(Bytes, 0, Bytes.length);
+        BitSet bits=new BitSet();
+        bits=BitSet.valueOf(Bytes);
+        Node rootfreq=new Node('\0', 0);
+        int[] k=new int[2];//k[0] index
+        k[0]=0;// first is The amount of zeros at the last.
+        BuildTree(rootfreq, bits, k);
+        Node SpecialRoot=BuildSpecialTree();
+        Node root=buildFinshTree(rootfreq,SpecialRoot);
+        int size=k[0]%8;
+        for(int i=0;i<8-size;i++)//complete to byte
+        	k[0]++;
+        Vector<Byte> b=TreeToByte(bits,root,k);
+        File file2=new File(output_names[0]);
+        OutputStream out=new FileOutputStream(file2);
+        byte[] ByteToSend=new byte[b.size()];
+        for(int i=0;i<b.size();i++)
+        ByteToSend[i]=b.get(i);
+        out.write(ByteToSend);
+ 		out.close();
+ 		finput.close(); 
+ 		return ByteToSend;
+		
 	}
 }

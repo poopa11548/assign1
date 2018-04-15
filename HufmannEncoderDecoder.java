@@ -56,16 +56,7 @@ class Node implements Comparable<Node>{
 		freq=_left.freq+_right.freq;
 		ch='\0';
 	}
-	public void SetCode(String s){
-		code=new boolean[s.length()];
-		for(int i=0;i<s.length();i++){
-			if(s.charAt(i)=='1')
-				code[i]=true;
-			else
-				code[i]=false;
-		}
-	}
-	@Override
+	
 	public int compareTo(Node node) {
 		return freq-node.freq;
 	}
@@ -78,7 +69,8 @@ class Node implements Comparable<Node>{
 	@Override
 	public void Compress(String[] input_names, String[] output_names) throws IOException
 	{
-		int []  freq=new int [256];
+		byte[] b=CompressWithArray(input_names, output_names);
+		/*int []  freq=new int [256];
 		File file=new File(input_names[0]);
 		InputStream input = new FileInputStream(file);
 		File file2=new File(output_names[0]);
@@ -103,14 +95,12 @@ class Node implements Comparable<Node>{
         	k++;
         	}
         }
+        bits.set(k);
         byte[] ByteCode = bits.toByteArray();
-       	int x=k-bits.length();
-       	byte ByteZeroEnd=(byte)x;//count zero lest
-       	out.write(ByteZeroEnd);
        	out.write(ByteTree);
        	out.write(ByteCode);
        	out.close();
-       	input.close();
+       	input.close();*/
 	}
 	public String RootToString(Node root){
 		if(root.left==null&&root.right==null){
@@ -195,21 +185,22 @@ class Node implements Comparable<Node>{
 	}
 	public void Decompress(String[] input_names, String[] output_names) throws IOException
 	{
-		File file=new File(input_names[0]);
+		byte[] b=DecompressWithArray(input_names, output_names);
+		/*File file=new File(input_names[0]);
 		InputStream finput = new FileInputStream(file);
 		byte[] Bytes = new byte[(int)file.length()];
         finput.read(Bytes, 0, Bytes.length);
-        int ZeroLast=(int)Bytes[0];
+        //int ZeroLast=(int)Bytes[0];
         BitSet bits=new BitSet();
         bits=BitSet.valueOf(Bytes);
         Node root=new Node('\0', 0);
         int[] k=new int[2];//k[0] index
-        k[0]=8;//8 bits first is The amount of zeros at the last.
+        k[0]=0;//
         BuildTree(root, bits, k);
         int size=k[0]%8;
         for(int i=0;i<8-size;i++)//complete to byte
         	k[0]++;
-        Vector<Byte> b=TreeToByte(bits,root,k,ZeroLast);
+        Vector<Byte> b=TreeToByte(bits,root,k);
         File file2=new File(output_names[0]);
         OutputStream out=new FileOutputStream(file2);
         byte[] ByteToSend=new byte[b.size()];
@@ -217,12 +208,12 @@ class Node implements Comparable<Node>{
         ByteToSend[i]=b.get(i);
         out.write(ByteToSend);
  		out.close();
- 		finput.close();
+ 		finput.close();*/
 	}
-	public  Vector<Byte> TreeToByte(BitSet ls,Node root,int[] k ,int x){
+	public  Vector<Byte> TreeToByte(BitSet ls,Node root,int[] k ){
 		Node p=root;
 		Vector<Byte> lb=new Vector<Byte>();
-		while(k[0]-1<ls.length()+x){
+		while(k[0]-1<ls.length()-1){
 			if(p.left==null&&p.right==null){
 				lb.add((byte)p.ch);
 				p=root;
@@ -285,15 +276,16 @@ class Node implements Comparable<Node>{
         	k++;
         	}
         }
+        bits.set(k);
         byte[] ByteCode = bits.toByteArray();
-       	int x=k-bits.length();
-       	byte ByteZeroEnd=(byte)x;//count zero lest
-       	byte[] ByteToSend=new byte[ByteTree.length+ByteCode.length+1];
-       	ByteToSend[0]=ByteZeroEnd;
+       /*	int x=k-bits.length();
+       	byte ByteZeroEnd=(byte)x;//count zero lest*/
+       	byte[] ByteToSend=new byte[ByteTree.length+ByteCode.length];
+       //	ByteToSend[0]=ByteZeroEnd;
        	for(int i=0;i<ByteTree.length;i++)
-       		ByteToSend[i+1]=ByteTree[i];
+       		ByteToSend[i]=ByteTree[i];
        	for(int i=0;i<ByteCode.length;i++)
-       		ByteToSend[i+ByteTree.length+1]=ByteCode[i];
+       		ByteToSend[i+ByteTree.length]=ByteCode[i];
     	out.write(ByteToSend);
        	out.close();
        	input.close();
@@ -307,17 +299,17 @@ class Node implements Comparable<Node>{
 		InputStream finput = new FileInputStream(file);
 		byte[] Bytes = new byte[(int)file.length()];
         finput.read(Bytes, 0, Bytes.length);
-        int ZeroLast=(int)Bytes[0];
+       // int ZeroLast=(int)Bytes[0];
         BitSet bits=new BitSet();
         bits=BitSet.valueOf(Bytes);
         Node root=new Node('\0', 0);
         int[] k=new int[2];//k[0] index
-        k[0]=8;//8 bits first is The amount of zeros at the last.
+        k[0]=0;//
         BuildTree(root, bits, k);
         int size=k[0]%8;
         for(int i=0;i<8-size;i++)//complete to byte
         	k[0]++;
-        Vector<Byte> b=TreeToByte(bits,root,k,ZeroLast);
+        Vector<Byte> b=TreeToByte(bits,root,k);
         File file2=new File(output_names[0]);
         OutputStream out=new FileOutputStream(file2);
         byte[] ByteToSend=new byte[b.size()];
