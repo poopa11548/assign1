@@ -183,7 +183,7 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 	}
 	private void fillNodes(Node root, Node[] nodes,Node[] Special) {
 		if(root.right==null&&root.left==null){
-			if(root.ch==0){
+			if(root.Special!=null){
 				Special[root.freq]=root;
 			}
 			else 
@@ -283,7 +283,7 @@ public class HufmannEnglishEnDe extends HufmannEncoderDecoder
 		Vector<Byte> lb=new Vector<Byte>();
 		while(k[0]-1<ls.length()-1){
 			if(p.left==null&&p.right==null){
-				if(p.ch==0){
+				if(p.Special!=null){
 				for(int i=0;i<p.Special.length();i++)
 					lb.add((byte)p.Special.charAt(i));
 				p=root;
